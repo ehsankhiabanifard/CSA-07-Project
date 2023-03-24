@@ -1,1 +1,147 @@
 
+```{r}
+#my Functions
+
+get_random_customer<- function()
+{
+  result<- c("C00")
+  return(paste(result,round(runif(1,1,5)),sep = "-"))
+}
+
+to_date_format<-function(int)
+{
+  if (int > 9) return(as.character(int))
+  else
+  {
+    return(paste("0",int,sep = ""))
+  }
+}
+get_user_info<- function(customer_id_str)
+{
+  user_info<- subset(payments, customer_id == customer_id_str )
+
+result<- c(sum(user_info$pay_amount),length(user_info$pay_amount))
+
+return(result)
+}
+
+```
+
+```{r}
+payments<- data.frame(customer_id = NA,pay_amount = NA,date= NA)
+
+year<- 2020
+
+while (year < 2023) {
+  
+
+for (i in 1:12) {
+  for(k in 1:29)
+  {
+    if (round(runif(1,1,2))==2)
+    {
+          new_row = list(customer_id = get_random_customer(), pay_amount=round(runif(1,50,100)), date = paste(year,to_date_format(i),to_date_format(k),sep = "-"))
+    payments = rbind(payments,new_row)
+    }
+  }
+  
+}
+year<- year+1
+}
+payments<- payments[-1,,]
+print(payments)
+```
+
+```{r}
+payments$profit_marigin<- payments$pay_amount * 0.25
+print(payments)
+
+```
+
+```{r}
+ cat("When is the beginning and end of this information? ",range(payments$date, na.rm = TRUE))
+ cat("\n\nHow many customers do we have in total? ", length(levels(factor(payments$customer_id))), " people")
+ cat("\n\nWhat was our total income? $", sum(payments$pay_amount),sep = "") 
+ cat("\n\nWhat was our total profit? $", sum(payments$profit_marigin),sep = "")
+ 
+ avr<- sum(payments$pay_amount)/ length(payments$pay_amount)
+ cat("\n\nHow much does each customer buy on average in each transaction? $", avr,sep = "")
+ 
+ avr<- sum(payments$profit_marigin)/ length(payments$profit_marigin)
+ cat("\n\nAverage profit per customer per transaction? $", avr,sep = "")
+ 
+ 
+ 
+
+```
+```{r}
+
+cat("\nThe total revenue received from customers is as follows\n----------------------------------")
+usinfo<- get_user_info("C00-1")
+cat("\nC00-1 total payment: $", usinfo[1]," and sum of transactions:", usinfo[2],sep = "")
+usinfo<- get_user_info("C00-2")
+cat("\nC00-2 total payment: $", usinfo[1]," and sum of transactions:", usinfo[2],sep = "")
+usinfo<- get_user_info("C00-3")
+cat("\nC00-3 total payment: $", usinfo[1]," and sum of transactions:", usinfo[2],sep = "")
+usinfo<- get_user_info("C00-4")
+cat("\nC00-4 total payment: $", usinfo[1]," and sum of transactions:", usinfo[2],sep = "")
+usinfo<- get_user_info("C00-5")
+cat("\nC00-5 total payment: $", usinfo[1]," and sum of transactions:", usinfo[2],"\n",sep = "")
+
+cat("\nIf we divide the number of transactions by 36 months, the average is obtained.\n----------------------------------")
+
+number_of_transactions<- length(payments$customer_id)
+usinfo<- get_user_info("C00-1")
+cat("\nC00-1 Average payment per month: $", usinfo[1]/number_of_transactions," Average transaction per month:", usinfo[2]/36,sep = "")
+usinfo<- get_user_info("C00-2")
+cat("\nC00-2 Average payment per month: $", usinfo[1]/number_of_transactions," Average transaction per month:", usinfo[2]/36,sep = "")
+usinfo<- get_user_info("C00-3")
+cat("\nC00-3 Average payment per month: $", usinfo[1]/number_of_transactions," Average transaction per month:", usinfo[2]/36,sep = "")
+usinfo<- get_user_info("C00-4")
+cat("\nC00-4 Average payment per month: $", usinfo[1]/number_of_transactions," Average transaction per month:", usinfo[2]/36,sep = "")
+usinfo<- get_user_info("C00-5")
+cat("\nC00-5 Average payment per month: $", usinfo[1]/number_of_transactions, " Average transaction per month:", usinfo[2]/36,"\n",sep = "")
+
+
+```
+
+```{r}
+average_total_income<- sum(payments$pay_amount) / length(payments$pay_amount)
+average_transaction_monthly<-  length(payments$pay_amount) / 36
+
+cat("Average monthly income :$",average_total_income,"\n",sep = "")
+cat("Average monthly transaction :",average_transaction_monthly,"\n",sep = "")
+
+cat("Average monthly income per client :$",average_total_income/5,"\n",sep = "")
+cat("Average monthly transaction per client :",average_transaction_monthly/5,"\n",sep = "")
+
+```
+```{r}
+#Average purchase value (APV) = Total revenue / Number of transactions.
+APV<- sum(payments$pay_amount) / length(payments$pay_amount)
+
+#Average purchase frequency rate (APFR) = Number of transactions / Number of unique customers.
+
+APFR<- length(payments$pay_amount) / 5
+
+#Customer value (CV) = APV / APFR.
+
+CV<-APV / APFR
+
+#Average customer lifetime (ACL) = Total customer lifetime / Number of customers.
+# months / 5
+
+ACL<- 36 / 5;
+
+
+#Customer lifetime value (CLTV) = CV * ACL.
+
+CLTV<- CV * ACL
+
+print(CLTV)
+
+
+
+
+```
+
